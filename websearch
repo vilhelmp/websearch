@@ -1,0 +1,83 @@
+#!/bin/bash
+
+## search the web from the command line
+
+BROWSER='FIREFOX'
+OPEN_IN='NEW WINDOW'
+BASEURL='https://www.google.nl/#q='
+while getopts :agmiyvWTGY OPT; do
+    case $OPT in
+        a|+a)
+            BASEURL='http://adsabs.harvard.edu/cgi-bin/nph-basic_connect?qsearch='
+            ;;
+        g|+g)
+            BASEURL='https://www.google.nl/#q='
+            ;;
+        m|+m)
+            BASEURL='http://maps.google.com/maps?q='
+            ;;
+        i|+i)
+            BASEURL='https://www.google.nl/search?hl=en&site=imghp&tbm=isch&q='
+            ;;
+        y|+y)
+            BASEURL='https://www.youtube.com/results?search_query='
+            ;;
+        v|+v)
+            BASEURL='http://translate.google.nl/#nl|en|'
+            ;;
+        T|+T)
+            OPEN_IN='NEW TAB'
+            ;;
+        W|+W)
+            OPEN_IN='NEW WINDOW'
+            ;;
+        G|+G)
+            BROWSER='GOOGLE CHROME'
+            ;;
+        F|+F)
+            BROWSER='FIREFOX'
+            ;;
+        *)
+            echo "usage: ${0##*/} [+-agmiyvWTGY} [--] SEARCH TERM..."
+            exit 2
+    esac
+done
+shift $(( OPTIND - 1 ))
+OPTIND=1
+
+# function to encode the URL, i.e. escape special characters
+rawurlencode() {
+  local string="${1}"
+  local strlen=${#string}
+  local encoded=""
+
+  for (( pos=0 ; pos<strlen ; pos++ )); do
+     c=${string:$pos:1}
+     case "$c" in
+        [-_.~a-zA-Z0-9] ) o="${c}" ;;
+        * )               printf -v o '%%%02x' "'$c"
+     esac
+     encoded+="${o}"
+  done
+  #echo "${encoded}"    # You can either set a return variable (FASTER) 
+  REPLY="${encoded}"   #+or echo the result (EASIER)... or both... :p
+}
+
+# Now, encode the input argument (all arguments)
+rawurlencode "$*"
+
+
+if [[ $BROWSER == 'GOOGLE CHROME' ]] ; then 
+    if [[ $OPEN_IN == 'NEW WINDOW' ]] ; then 
+        google-chrome --new-window $BASEURL${REPLY}
+    elif [[ $OPEN_IN == 'NEW TAB' ]]; then
+        google-chrome $BASEURL${REPLY}
+    fi
+elif [[ $BROWSER == 'FIREFOX' ]] ; then
+    if [[ $OPEN_IN == 'NEW WINDOW' ]] ; then 
+        firefox  -new-window "$BASEURL${REPLY}" 2> /dev/null
+    elif [[ $OPEN_IN == 'NEW TAB' ]] ; then 
+        firefox  -new-tab  "$BASEURL${REPLY}" 2> /dev/null
+    fi
+fi
+
