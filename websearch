@@ -5,7 +5,7 @@
 BROWSER='FIREFOX'
 OPEN_IN='NEW WINDOW'
 BASEURL='https://www.google.nl/#q='
-while getopts :agmiysvWTGF OPT; do
+while getopts :agmiysvwWTGF OPT; do
     case $OPT in
         a|+a)
             BASEURL='http://adsabs.harvard.edu/cgi-bin/nph-basic_connect?qsearch='
@@ -28,6 +28,9 @@ while getopts :agmiysvWTGF OPT; do
         s|+s)
             BASEURL='http://scholar.google.nl/scholar?q='
             ;;
+        w|+w)
+            BASEURL='http://en.wikipedia.org/wiki/'
+            ;;
         T|+T)
             OPEN_IN='NEW TAB'
             ;;
@@ -41,7 +44,7 @@ while getopts :agmiysvWTGF OPT; do
             BROWSER='FIREFOX'
             ;;
         *)
-            echo "usage: ${0##*/} [+-agmiysvWTGF} [--] SEARCH TERM..."
+            echo "usage: ${0##*/} [+-agmiysvwWTGF} [--] SEARCH TERM..."
             exit 2
     esac
 done
