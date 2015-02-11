@@ -5,7 +5,7 @@
 BROWSER='FIREFOX'
 OPEN_IN='NEW WINDOW'
 BASEURL='https://www.google.nl/#q='
-while getopts :agmiysvwWTGF OPT; do
+while getopts :agmiysvwWTGFK OPT; do
     case $OPT in
         a|+a)
             BASEURL='http://adsabs.harvard.edu/cgi-bin/nph-basic_connect?qsearch='
@@ -42,6 +42,9 @@ while getopts :agmiysvwWTGF OPT; do
             ;;
         F|+F)
             BROWSER='FIREFOX'
+            ;;
+        K|+K)
+            BROWSER='KONQUEROR'
             ;;
         *)
             echo "usage: ${0##*/} [+-agmiysvwWTGF} [--] SEARCH TERM..."
@@ -84,5 +87,8 @@ elif [[ $BROWSER == 'FIREFOX' ]] ; then
     elif [[ $OPEN_IN == 'NEW TAB' ]] ; then 
         firefox  -new-tab  "$BASEURL${REPLY}" 2> /dev/null
     fi
+elif [[ $BROWSER == 'KONQUEROR' ]] ; then
+    ## no command line control of window/tab opening etc
+    konqueror  "$BASEURL${REPLY}" 2> /dev/null
 fi
 
