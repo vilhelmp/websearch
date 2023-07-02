@@ -5,13 +5,16 @@
 BROWSER='FIREFOX'
 OPEN_IN='NEW WINDOW'
 BASEURL='https://www.google.nl/#q='
-while getopts :agmiysvwWTGFK OPT; do
+while getopts :agdmiysvwWTGFK OPT; do
     case $OPT in
         a|+a)
             BASEURL='http://adsabs.harvard.edu/cgi-bin/nph-basic_connect?qsearch='
             ;;
         g|+g)
             BASEURL='https://www.google.nl/#q='
+            ;;
+        d|+d)
+            BASEURL='https://www.duckduckgo.com/?q='
             ;;
         m|+m)
             BASEURL='http://maps.google.com/maps?q='
