@@ -1,10 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+trap exit int
+set -o nounset -o errexit
 
 
 ## search the web from the command line
 
 BROWSER='firefox'
-OPEN_IN='new window'
+OPEN_IN='new tab'
 BASEURL='https://www.duckduckgo.com/?q='
 SEARCH_TERM_SOURCE="command line"
 while getopts :agdmiysvwWTGFKx OPT; do
@@ -86,5 +88,5 @@ elif [[ $BROWSER == 'firefox' ]] ; then
     fi
 fi
 
-COMMAND="$BROWSER $BROWSER_ARGS \"$BASEURL${SEARCH_TERM}\""
+COMMAND="$BROWSER $BROWSER_ARGS '$BASEURL${SEARCH_TERM}'"
 bash -c "$COMMAND"
