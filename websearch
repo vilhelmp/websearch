@@ -4,29 +4,29 @@
 
 BROWSER='FIREFOX'
 OPEN_IN='NEW WINDOW'
-BASEURL='https://www.google.nl/#q='
+BASEURL='https://www.google.com/#q='
 while getopts :agmiysvwWTGFK OPT; do
     case $OPT in
         a|+a)
             BASEURL='http://adsabs.harvard.edu/cgi-bin/nph-basic_connect?qsearch='
             ;;
         g|+g)
-            BASEURL='https://www.google.nl/#q='
+            BASEURL='https://www.google.com/#q='
             ;;
         m|+m)
             BASEURL='http://maps.google.com/maps?q='
             ;;
         i|+i)
-            BASEURL='https://www.google.nl/search?hl=en&site=imghp&tbm=isch&q='
+            BASEURL='https://www.google.com/search?hl=en&site=imghp&tbm=isch&q='
             ;;
         y|+y)
             BASEURL='https://www.youtube.com/results?search_query='
             ;;
         v|+v)
-            BASEURL='http://translate.google.nl/#nl|en|'
+            BASEURL='http://translate.google.com/#sv|en|'
             ;;
         s|+s)
-            BASEURL='http://scholar.google.nl/scholar?q='
+            BASEURL='http://scholar.google.com/scholar?q='
             ;;
         w|+w)
             BASEURL='http://en.wikipedia.org/wiki/'
