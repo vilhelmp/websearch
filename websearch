@@ -1,17 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
+trap exit int
+set -o nounset -o errexit
+
 
 ## search the web from the command line
 
-BROWSER='FIREFOX'
-OPEN_IN='NEW WINDOW'
-BASEURL='https://www.google.com/#q='
-while getopts :agmiysvwWTGFK OPT; do
+
+BROWSER='firefox'
+OPEN_IN='new tab'
+BASEURL='https://www.duckduckgo.com/?q='
+SEARCH_TERM_SOURCE="command line"
+while getopts :agdmiysvwWTGFKx OPT; do
+
     case $OPT in
         a|+a)
             BASEURL='http://adsabs.harvard.edu/cgi-bin/nph-basic_connect?qsearch='
             ;;
         g|+g)
             BASEURL='https://www.google.com/#q='
+            ;;
+        d|+d)
+            BASEURL='https://www.duckduckgo.com/?q='
             ;;
         m|+m)
             BASEURL='http://maps.google.com/maps?q='
@@ -32,19 +41,22 @@ while getopts :agmiysvwWTGFK OPT; do
             BASEURL='http://en.wikipedia.org/wiki/'
             ;;
         T|+T)
-            OPEN_IN='NEW TAB'
+            OPEN_IN='new tab'
             ;;
         W|+W)
-            OPEN_IN='NEW WINDOW'
+            OPEN_IN='new window'
             ;;
         G|+G)
-            BROWSER='GOOGLE CHROME'
+            BROWSER='chromium'
             ;;
         F|+F)
-            BROWSER='FIREFOX'
+            BROWSER='firefox'
             ;;
         K|+K)
-            BROWSER='KONQUEROR'
+            BROWSER='konqueror'
+            ;;
+        x|+x)
+            SEARCH_TERM_SOURCE="x selection"
             ;;
         *)
             echo "usage: ${0##*/} [+-agmiysvwWTGF} [--] SEARCH TERM..."
@@ -54,41 +66,29 @@ done
 shift $(( OPTIND - 1 ))
 OPTIND=1
 
-# function to encode the URL, i.e. escape special characters
-rawurlencode() {
-  local string="${1}"
-  local strlen=${#string}
-  local encoded=""
+case $SEARCH_TERM_SOURCE in
+    "command line")
+        SEARCH_TERM="$*"
+        ;;
+    "x selection")
+        SEARCH_TERM=$(xclip -o)
+        ;;
+    *)
+        exit 1
+esac
 
-  for (( pos=0 ; pos<strlen ; pos++ )); do
-     c=${string:$pos:1}
-     case "$c" in
-        [-_.~a-zA-Z0-9] ) o="${c}" ;;
-        * )               printf -v o '%%%02x' "'$c"
-     esac
-     encoded+="${o}"
-  done
-  REPLY="${encoded}"
-}
-
-# Now, encode the input argument (all arguments)
-rawurlencode "$*"
-
-
-if [[ $BROWSER == 'GOOGLE CHROME' ]] ; then 
-    if [[ $OPEN_IN == 'NEW WINDOW' ]] ; then 
-        google-chrome --new-window $BASEURL${REPLY}
-    elif [[ $OPEN_IN == 'NEW TAB' ]]; then
-        google-chrome $BASEURL${REPLY}
+BROWSER_ARGS=""
+if [[ $BROWSER == 'chromium' ]] ; then 
+    if [[ $OPEN_IN == 'new window' ]] ; then 
+        BROWSER_ARGS="$BROWSER_ARGS --new-window"
     fi
-elif [[ $BROWSER == 'FIREFOX' ]] ; then
-    if [[ $OPEN_IN == 'NEW WINDOW' ]] ; then 
-        firefox  -new-window "$BASEURL${REPLY}" 2> /dev/null
-    elif [[ $OPEN_IN == 'NEW TAB' ]] ; then 
-        firefox  -new-tab  "$BASEURL${REPLY}" 2> /dev/null
+elif [[ $BROWSER == 'firefox' ]] ; then
+    if [[ $OPEN_IN == 'new window' ]] ; then 
+        BROWSER_ARGS="$BROWSER_ARGS -new-window"
+    elif [[ $OPEN_IN == 'new tab' ]] ; then 
+        BROWSER_ARGS="$BROWSER_ARGS -new-tab"
     fi
-elif [[ $BROWSER == 'KONQUEROR' ]] ; then
-    ## no command line control of window/tab opening etc
-    konqueror  "$BASEURL${REPLY}" 2> /dev/null
 fi
 
+COMMAND="$BROWSER $BROWSER_ARGS '$BASEURL${SEARCH_TERM}'"
+bash -c "$COMMAND"
